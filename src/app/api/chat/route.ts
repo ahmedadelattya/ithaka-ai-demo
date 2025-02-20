@@ -28,7 +28,7 @@ export function errorHandler(error: unknown) {
     return JSON.stringify(error);
 }
 
-const API_BASE_URL = "http://localhost/ithaka_backend/public/api";
+const API_BASE_URL = "http://be.ithaka.world/api";
 
 export async function fetchDestinations() {
     const response = await fetch(`${API_BASE_URL}/destinations`);
