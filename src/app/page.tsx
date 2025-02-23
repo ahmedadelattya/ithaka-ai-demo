@@ -16,13 +16,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-const promptStarters = [
-  'Tell me about popular destinations in Egypt',
-  'What are the must-visit places in Alexandria?',
-  'Suggest a cultural tour in Cairo',
-  'How can I plan a trip to multiple Egyptian cities?',
-  "What's the best time to visit Egypt?",
-];
+// const promptStarters = [
+//   'Tell me about popular destinations in Egypt',
+//   'What are the must-visit places in Alexandria?',
+//   'Suggest a cultural tour in Cairo',
+//   'How can I plan a trip to multiple Egyptian cities?',
+//   "What's the best time to visit Egypt?",
+// ];
 
 export default function Chat() {
   const {
@@ -133,7 +133,7 @@ export default function Chat() {
         </CardContent>
 
         <CardFooter className='flex flex-col space-y-4 p-6 bg-gray-50 border-t'>
-          <div className='flex flex-wrap gap-2 justify-center'>
+          {/* <div className='flex flex-wrap gap-2 justify-center'>
             {promptStarters.map((prompt, index) => (
               <Button
                 key={index}
@@ -144,7 +144,7 @@ export default function Chat() {
                 {prompt}
               </Button>
             ))}
-          </div>
+          </div> */}
 
           <form onSubmit={onSubmit} className='flex w-full space-x-2'>
             <Input
