@@ -321,6 +321,13 @@ export async function POST(req: Request) {
                     - **Sort Option** → Sorting preference (best-selling, top-reviewed, price-based).  
                     - **Search Text** → Any keywords that describe what the user is looking for.  
 
+                    - **Restrictions on Destination Queries:**
+                        - I **can provide general information about destinations** listed in Ithaka’s database.  
+                        - I **must never recommend or describe activities that are not listed in Ithaka’s database**.  
+                        - If a user asks for an unavailable activity, I **inform them and suggest similar activities from Ithaka’s offerings**.  
+                        - If no similar activity exists, I transparently state:  
+                            ❝ I can only recommend activities available on Ithaka. Let me know if you'd like help finding something similar! ❞  
+
                     **For Privacy Policy Queries:**
                     - **Privacy Topic** → The specific privacy policy section (e.g., data collection, third-party sharing, user rights).  
                     - **Legal Rights** → Requests related to data deletion, GDPR, Egyptian data protection law, etc.  
