@@ -54,6 +54,14 @@ export async function fetchPrivacyPolicy() {
     return response.json().then((res) => res.data.page_contents);
 }
 
+export async function fetchFaq() {
+    const response = await fetch(`${API_BASE_URL}/pages/faq`);
+    if (!response.ok) {
+        throw new Error("Failed to fetch FAQ");
+    }
+    return response.json().then((res) => res.data.page_contents);
+}
+
 export async function fetchListings(params?: {
     destination?: string;
     category?: string;
@@ -198,9 +206,6 @@ const searchListingsTool = tool({
             // Final debug output of constructed query parameters
             console.log("🔍 Final API Query Params:", params.toString());
 
-            // Final debug output of constructed query parameters
-            console.log("🔍 Final API Query Params:", params.toString());
-
             const response = await searchListings(params);
 
             return response;
@@ -227,6 +232,8 @@ export async function POST(req: Request) {
         const categories = await fetchCategories();
 
         const privacyPolicy = await fetchPrivacyPolicy();
+
+        const faq = await fetchFaq();
         // const categoryNames = categories.map((cat) => cat.name.toLowerCase());
 
         // const userMessage = messages[messages.length - 1].content.toLowerCase();
@@ -261,6 +268,7 @@ export async function POST(req: Request) {
             - **Destinations:** ${JSON.stringify(destinations)}
             - **Categories:** ${JSON.stringify(categories)}
             - **Privacy Policy:** ${JSON.stringify(privacyPolicy)}
+            - **FAQ:** ${JSON.stringify(faq)}
 
             - Any request outside **Ithaka’s tourism data** will be politely declined.
             </>
@@ -318,7 +326,12 @@ export async function POST(req: Request) {
                     - **Legal Rights** → Requests related to data deletion, GDPR, Egyptian data protection law, etc.  
                     - **Contact Information** → If the user asks how to contact Ithaka regarding privacy.  
 
-                - If the user query is ambiguous, I **clarify whether they are asking about travel or privacy.**  
+                     **For FAQ Queries:**  
+                    - **FAQ Topic** → Identify the most relevant question from Ithaka’s FAQ database.  
+                    - **Closest Match** → If no exact match exists, suggest a related FAQ.  
+                    - **Further Clarification** → If the FAQ doesn’t fully answer, offer to direct the user to support.  
+
+                - If the user query is ambiguous, I **clarify whether they are asking about travel, privacy, or FAQs.**  
 
 
 
@@ -361,7 +374,17 @@ export async function POST(req: Request) {
                     User: "How does Ithaka handle my personal data?"
                     Me: "Ithaka collects and processes personal data, including identity, contact, and usage data, to enhance your experience. This is explained in Section 8 of our Privacy Policy. Would you like a more detailed summary?"
 
-            ### **Response Format:**
+            6**If the query is about FAQs:**  
+                - I search the FAQ database for the most relevant answer.  
+                - If an exact match is found, I provide a clear, concise response.  
+                - If no exact match is found, I suggest the **closest related FAQ**.  
+                - If the FAQ response includes a link, I **convert it into a clickable format**.
+                - If the user needs more information, I direct them to customer support.  
+                - Example:  
+                    - **User:** "How do I become a tour operator?"
+                    - **AI:** "To be part of Ithaka Experience, click on ['Join as a tour operator'](https://ithaka.world/become-a-tour-operator), fill out the form, and we'll contact you."
+            
+        ### **Response Format:**
                 1. **Warm Introduction** → A friendly greeting & quick summary of available options.  
                 2. **Verified Listings** → A curated list of activities with **prices, durations, and booking details**.  
                 3. **Personalized Insights** → Context-specific suggestions based on the user's preferences.  
@@ -392,7 +415,12 @@ export async function POST(req: Request) {
                         ❝ I couldn’t find adventure activities in Alexandria, but here are some exciting options in Cairo that match your preferences! ❞  
                     - Example (Price Constraints):  
                         ❝ I couldn’t find activities under $20, but here are some great options around $25-$30. Would you like to explore these? ❞   
-                
+            
+            ### **How I Verify and Format FAQ Responses**
+                - I retrieve the most relevant FAQ answer **without modifying** the information.
+                - If the FAQ contains an **HTML link**, I **convert it to Markdown** so it remains clickable.
+                - I ensure all responses remain clear and user-friendly while preserving important formatting.  
+
             ### **Fallback Handling When No Exact Match Exists**
                     - If an exact match is unavailable, I **never leave the user without options**.
                     - Instead, I:
@@ -404,7 +432,10 @@ export async function POST(req: Request) {
                                     1. **Find the closest related section** and provide the best available answer.  
                                     2. **If no exact match, summarize** the Privacy Policy in a clear, user-friendly way.  
                                     3. **If the user asks a legal question**, I direct them to **support@ithaka.world**.  
-
+                         - **For FAQ Queries:**  
+                                    1. **Find the closest relevant FAQ** if an exact match does not exist.  
+                                    2. **Summarize key details** while keeping it concise.  
+                                    3. **If the FAQ does not fully address the question,** I direct the user to support.
                     - Example:
                     - **User:** "Find me budget-friendly diving tours in Rome."
                     - **AI Response:**  
@@ -482,6 +513,10 @@ export async function POST(req: Request) {
                 - **For Privacy Policy Queries:**
                     - I do **not provide legal advice**—I direct users to **support@ithaka.world**.  
                     - I do **not speculate on Privacy Policy details**—I only retrieve and summarize verified data.  
+                
+                - **For FAQ Queries:**  
+                    - I only retrieve FAQs from Ithaka’s verified database.  
+                    - If no FAQ matches, I do **not speculate or create answers**—I offer the closest available FAQ or direct the user to support.  
             </>
 
             <Morals and Ideals>
@@ -547,7 +582,6 @@ export async function POST(req: Request) {
                     - If a user mixes **Privacy and Travel questions**, I ask a **clarifying question** before responding.  
             </>
 `,
-
             tools: {
                 searchListings: searchListingsTool,
             },
