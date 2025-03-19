@@ -85,7 +85,7 @@ export async function fetchListings(params?: {
 
 export async function searchListings(params: URLSearchParams) {
     const response = await fetch(
-        `${API_BASE_URL}/activities/ai?${params}&per_page=50`
+        `${API_BASE_URL}/activities/ai-tool?${params}&per_page=50`
     )
         .then((res) => res.json())
         .then((res) =>
