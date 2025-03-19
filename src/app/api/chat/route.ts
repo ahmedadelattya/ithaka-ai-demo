@@ -28,7 +28,7 @@ export function errorHandler(error: unknown) {
     return JSON.stringify(error);
 }
 
-const API_BASE_URL = "http://be.ithaka.world/api";
+const API_BASE_URL = "https://prelive-be.ithaka.world/api";
 
 export async function fetchDestinations() {
     const response = await fetch(`${API_BASE_URL}/destinations`);
@@ -85,7 +85,7 @@ export async function fetchListings(params?: {
 
 export async function searchListings(params: URLSearchParams) {
     const response = await fetch(
-        `${API_BASE_URL}/activities?${params}&per_page=50`
+        `${API_BASE_URL}/activities/ai?${params}&per_page=50`
     )
         .then((res) => res.json())
         .then((res) =>
