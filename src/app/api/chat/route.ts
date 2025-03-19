@@ -88,17 +88,6 @@ export async function searchListings(params: URLSearchParams) {
         `${API_BASE_URL}/activities/ai-tool?${params}&per_page=50`
     )
         .then((res) => res.json())
-        .then((res) =>
-            res.data.listings.map((item: any) => {
-                return {
-                    name: item.title,
-                    slug: item.slug,
-                    price: item.min_price,
-                    description: item.description,
-                    categories: item.categories as { name: string }[],
-                };
-            })
-        )
         .catch((err) => {
             console.error("Failed to fetch listings:", err.message);
         });
@@ -140,6 +129,8 @@ const searchListingsTool = tool({
             .describe("Destination IDs"),
         min_price: z.number().optional().describe("Minimum price"),
         max_price: z.number().optional().describe("Maximum price"),
+        from_date: z.string().optional().describe("Start date"),
+        to_date: z.string().optional().describe("End date"),
         sort_by: z
             .enum([
                 "price-low-to-high",
@@ -157,6 +148,8 @@ const searchListingsTool = tool({
         min_price,
         max_price,
         sort_by,
+        from_date,
+        to_date,
     }) => {
         try {
             const params = new URLSearchParams();
@@ -193,6 +186,14 @@ const searchListingsTool = tool({
             if (sort_by) {
                 params.set("sort_by", sort_by);
                 console.log("Debug: Set sort_by =", sort_by);
+            }
+            if (from_date) {
+                params.set("from_date", from_date.toString());
+                console.log("Debug: Set start_date =", from_date);
+            }
+            if (to_date) {
+                params.set("to_date", to_date.toString());
+                console.log("Debug: set end_date =", to_date);
             }
             // Apply fuzzy sorting logic
             // const normalizedSort = getClosestSortOption(sort_by);
